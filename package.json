@@ -2,7 +2,7 @@
   "name": "ReplitReactjsProject",
   "version": "0.0.1",
   "scripts": {
-    "local": "vite",
+    "local": "vite --mode localhost",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"

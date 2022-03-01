@@ -6,15 +6,17 @@ import {defineConfig} from "vite";
  * @type { import('vite').UserConfig }
  */
 export default defineConfig(({mode}) => {
+  let configServer;
+
   if (mode === 'localhost') {
-    return {
+    configServer = {
       plugins: [reactRefresh()],
       server: {
         host: '0.0.0.0'
       }
     }
   } else {
-    return {
+    configServer = {
       plugins: [reactRefresh()],
       server: {
         host: '0.0.0.0',
@@ -23,5 +25,15 @@ export default defineConfig(({mode}) => {
         }
       }
     }
+  }
+
+  return {
+    define: {
+      global: {},
+      process: {
+        'env': {}
+      }
+    },
+    ...configServer
   }
 })

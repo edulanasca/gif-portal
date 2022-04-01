@@ -1,0 +1,2 @@
+run="yarn --cwd ./app dev"
+entrypoint="app/src/App.jsx"

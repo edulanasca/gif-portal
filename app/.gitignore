@@ -6,3 +6,4 @@ dist-ssr
 .env
 src/**/keypair.json
 .idea
+*.log

@@ -1,2 +1,2 @@
-run="yarn --cwd ./app dev"
+run="yarn --cwd ./app install && yarn --cwd ./app replit"
 entrypoint="app/src/App.jsx"

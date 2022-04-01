@@ -11,9 +11,6 @@ export default defineConfig(({mode}) => {
   if (mode === 'localhost') {
     configServer = {
       plugins: [reactRefresh()],
-      server: {
-        host: '0.0.0.0'
-      }
     }
   } else {
     configServer = {

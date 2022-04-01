@@ -1,24 +1,17 @@
 import reactRefresh from '@vitejs/plugin-react-refresh';
 import {defineConfig} from "vite";
-import NodeGlobalsPolyfillPlugin from "@esbuild-plugins/node-globals-polyfill";
-import {NodeModulesPolyfillPlugin} from '@esbuild-plugins/node-modules-polyfill';
-import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
+import stdLibBrowser from 'node-stdlib-browser';
+import inject from '@rollup/plugin-inject';
 
 /**
  * https://vitejs.dev/config/
  * @type { import('vite').UserConfig }
  */
-export default defineConfig(({mode}) => {
-  let configServer;
+export default defineConfig(async ({mode}) => {
+  let configServer = {};
 
-  if (mode === 'localhost') {
+  if (mode === 'replit') {
     configServer = {
-      plugins: [reactRefresh()],
-    }
-  } else {
-    // This config is for replit
-    configServer = {
-      plugins: [reactRefresh()],
       server: {
         host: '0.0.0.0',
         hmr: {
@@ -28,72 +21,39 @@ export default defineConfig(({mode}) => {
     }
   }
 
-  // Built thanks to this article https://medium.com/@ftaioli/using-node-js-builtin-modules-with-vite-6194737c2cd2
   return {
     resolve: {
-      alias: {
-        // This Rollup aliases are extracted from @esbuild-plugins/node-modules-polyfill,
-        // see https://github.com/remorses/esbuild-plugins/blob/master/node-modules-polyfill/src/polyfills.ts
-        // process and buffer are excluded because already managed
-        // by node-globals-polyfill
-        util: 'rollup-plugin-node-polyfills/polyfills/util',
-        sys: 'util',
-        events: 'rollup-plugin-node-polyfills/polyfills/events',
-        stream: 'rollup-plugin-node-polyfills/polyfills/stream',
-        path: 'rollup-plugin-node-polyfills/polyfills/path',
-        querystring: 'rollup-plugin-node-polyfills/polyfills/qs',
-        punycode: 'rollup-plugin-node-polyfills/polyfills/punycode',
-        url: 'rollup-plugin-node-polyfills/polyfills/url',
-        string_decoder:
-          'rollup-plugin-node-polyfills/polyfills/string-decoder',
-        http: 'rollup-plugin-node-polyfills/polyfills/http',
-        https: 'rollup-plugin-node-polyfills/polyfills/http',
-        os: 'rollup-plugin-node-polyfills/polyfills/os',
-        assert: 'rollup-plugin-node-polyfills/polyfills/assert',
-        constants: 'rollup-plugin-node-polyfills/polyfills/constants',
-        _stream_duplex:
-          'rollup-plugin-node-polyfills/polyfills/readable-stream/duplex',
-        _stream_passthrough:
-          'rollup-plugin-node-polyfills/polyfills/readable-stream/passthrough',
-        _stream_readable:
-          'rollup-plugin-node-polyfills/polyfills/readable-stream/readable',
-        _stream_writable:
-          'rollup-plugin-node-polyfills/polyfills/readable-stream/writable',
-        _stream_transform:
-          'rollup-plugin-node-polyfills/polyfills/readable-stream/transform',
-        timers: 'rollup-plugin-node-polyfills/polyfills/timers',
-        console: 'rollup-plugin-node-polyfills/polyfills/console',
-        vm: 'rollup-plugin-node-polyfills/polyfills/vm',
-        zlib: 'rollup-plugin-node-polyfills/polyfills/zlib',
-        tty: 'rollup-plugin-node-polyfills/polyfills/tty',
-        domain: 'rollup-plugin-node-polyfills/polyfills/domain'
-      }
+      alias: stdLibBrowser
     },
     optimizeDeps: {
-      esbuildOptions: {
-        // Node.js global to browser globalThis
-        define: {
-          global: 'globalThis'
-        },
-        // Enable esbuild polyfill plugins
-        plugins: [
-          NodeGlobalsPolyfillPlugin({
-            process: true,
-            buffer: true
-          }),
-          NodeModulesPolyfillPlugin()
-        ]
-      }
+      include: ['buffer', 'process']
     },
-    build: {
-      rollupOptions: {
-        plugins: [
-          // Enable rollup polyfills plugin
-          // used during production bundling
-          rollupNodePolyFill()
-        ]
+    plugins: [
+      reactRefresh(),
+      {
+        ...inject({
+          global: [
+            require.resolve(
+              'node-stdlib-browser/helpers/esbuild/shim'
+            ),
+            'global'
+          ],
+          process: [
+            require.resolve(
+              'node-stdlib-browser/helpers/esbuild/shim'
+            ),
+            'process'
+          ],
+          Buffer: [
+            require.resolve(
+              'node-stdlib-browser/helpers/esbuild/shim'
+            ),
+            'Buffer'
+          ]
+        }),
+        enforce: 'post'
       }
-    },
+    ],
     ...configServer
   }
 })

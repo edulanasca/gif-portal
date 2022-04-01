@@ -2,13 +2,10 @@ import React, {useEffect, useState} from 'react';
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
 
-import {Buffer} from 'buffer';
 import WalletNotConnected from "./components/WalletNotConnected";
 import WalletConnected from "./components/WalletConnected";
 import WalletNotExists from "./components/WalletNotExists";
 import {getTwitterLink, SNK_URL_IMG} from "./utils/links";
-
-window.Buffer = Buffer;
 
 const App = () => {
   const [walletAddress, setWalletAddress] = useState(null);

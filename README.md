@@ -1,13 +1,20 @@
-## Running React on Repl.it
+# GIF Portal
+Built on buildspace
 
-[React](https://reactjs.org/) is a popular JavaScript library for building user interfaces.
+## Deploy in localnet
+1. In `Anchor.toml` change line 3 to `[programs.localnet]` and line 10 `cluster = "localnet"`
+2. Run `anchor build`
+3. This will create a new build for us with a program id. We can access it by running: `solana address -k target/deploy/myepicproject-keypair.json`
+4. Go to lib.rs and change the id inside `declare_id!`
+5. Run again `anchor build`
+6. Finally `anchor deploy`
 
-[Vite](https://vitejs.dev/) is a blazing fast frontend build tool that includes features like Hot Module Reloading (HMR), optimized builds, and TypeScript support out of the box.
+I know, a lot of steps ... 😅
 
-Using the two in conjunction is one of the fastest ways to build a web app.
+## Deploy in devnet
+Same as before but with `[programs.devnet]` and `cluster = "devnet"` respectively
 
-### Getting Started
-- Hit run
-- Edit [App.jsx](#src/App.jsx) and watch it live update!
+## Upgrade the program
 
-By default, Replit runs the `dev` script, but you can configure it by changing the `run` field in the `.replit` file.
+Run `anchor upgrade target/deploy/gif_portal.so --provider.cluster cluster --program-id program_id`
+> cluster could be localnet or devnet
